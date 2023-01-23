@@ -1,0 +1,58 @@
+@import url(https://fonts.googleapis.com/css?family=Poppins:100,100italic,200,200italic,300,300italic,regular,italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic);
+
+body {
+  margin: 0;
+}
+
+.App {
+  display: flex;
+  justify-content: center;
+}
+
+.registerDiv, .loginDiv {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 20px;
+  padding: 20px 40px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px 1px rgb(226, 221, 187);
+  background-color: rgb(253, 248, 209);
+}
+
+#registerSpan {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  font-family: 'Poppins';
+}
+
+.input {
+  outline: none;
+  border: 1px solid rgba(0,0,0,.2);
+}
+
+.btn {
+  position: relative;
+  font-size: 1.25rem;
+  background: none;
+  color: rgb(0, 0, 0);
+  z-index: 1;
+  cursor: pointer;
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  transform: scale(0);
+  background-color: rgb(255, 235, 51);
+  transition: 100ms transform ease-in-out;
+}
+
+#btn:hover::before {
+  transform: scale(1);
+}
