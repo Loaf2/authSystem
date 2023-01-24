@@ -11,9 +11,7 @@ function App() {
     if (usernameRef.current.value === "" || passwordRef.current.value === "")
       return;
     const username = usernameRef.current.value;
-    const password = usernameRef.current.value;
-
-    
+    const password = passwordRef.current.value;
 
     fetch("/register", {
       method: "POST",
@@ -28,12 +26,13 @@ function App() {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
+        if (data !== "Equal") {
+          navigate("/login");
+        }
       })
       .catch((err) => {
         console.log(err);
       });
-
-    navigate("/login");
   }
 
   return (
