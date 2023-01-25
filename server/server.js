@@ -5,6 +5,8 @@ const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 app.use(express.json());
+const stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY)
+
 
 const connection = sql.createPool({
   host: "localhost",
@@ -24,6 +26,7 @@ app.post("/register", async (req, res) => {
       console.log(rows);
       if (rows.length === 0) {
         const data = JSON.stringify({ username: username });
+        console.log(data);
         connection.query(
           "INSERT INTO users(username, password, data) VALUES(?,?,?)",
           [username, hashedPassword, data],
@@ -58,10 +61,19 @@ app.post("/login", (req, res) => {
       console.log(match);
       if (!match) return console.log(userErrMsg);
       console.log("Logged in");
-      console.log(rowData);
-      res.json(["Success", rowData]);
+      res.json(["Success", rowData, {username: username, password: rowPassword}]);
     }
   );
 });
+
+app.get("/items", (req, res) => {
+  connection.query("SELECT items FROM storeItems", function(err, rows, fields) {
+    if (rows.length !== 0) {
+      res.json(rows)
+    } else {
+      return console.log("Empty store items")
+    }
+  })
+})
 
 app.listen(3000);

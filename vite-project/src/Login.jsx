@@ -28,7 +28,8 @@ export default function Login() {
       .then((res) => res.json())
       .then((response) => {
         if (response[0] === "Success") {
-          navigate("/dashboard", { state: response[1] });
+          console.log(response[2]);
+          navigate("/dashboard", { state: [response[1], response[2]] });
         }
       })
       .catch((err) => {

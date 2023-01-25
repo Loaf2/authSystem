@@ -8,7 +8,8 @@ export default defineConfig({
     proxy: {
       '/register': 'http://localhost:3000',
       '/login': 'http://localhost:3000',
-      '/dashboard': 'http://localhost:3000'
+      '/dashboard': 'http://localhost:3000',
+      '/items': 'http://localhost:3000',
     },
   },
 })
