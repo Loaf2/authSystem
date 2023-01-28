@@ -10,6 +10,7 @@ export default defineConfig({
       '/login': 'http://localhost:3000',
       '/dashboard': 'http://localhost:3000',
       '/items': 'http://localhost:3000',
+      '/create-checkout-session': 'http://localhost:3000',
     },
   },
 })

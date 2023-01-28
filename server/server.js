@@ -1,14 +1,22 @@
 const express = require("express");
 const app = express();
-const sql = require("mysql2");
+const mysql = require("mysql2");
+const mysqlPromises = require("mysql2/promise");
+const cors = require("cors")
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+)
+
 app.use(express.json());
-const stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY)
+const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY);
 
 
-const connection = sql.createPool({
+const connection = mysql.createPool({
   host: "localhost",
   user: "root",
   password: process.env.DBPASSWORD,
@@ -61,19 +69,72 @@ app.post("/login", (req, res) => {
       console.log(match);
       if (!match) return console.log(userErrMsg);
       console.log("Logged in");
-      res.json(["Success", rowData, {username: username, password: rowPassword}]);
+      res.json([
+        "Success",
+        rowData,
+        { username: username, password: rowPassword },
+      ]);
     }
   );
 });
 
 app.get("/items", (req, res) => {
-  connection.query("SELECT items FROM storeItems", function(err, rows, fields) {
-    if (rows.length !== 0) {
-      res.json(rows)
-    } else {
-      return console.log("Empty store items")
+  connection.query(
+    "SELECT items FROM storeItems",
+    function (err, rows, fields) {
+      if (rows.length !== 0) {
+        res.json(rows);
+      } else {
+        return console.log("Empty store items");
+      }
     }
-  })
-})
+  );
+});
+
+app.post("/create-checkout-session", async (req, res) => {
+  try {
+    const promiseConnection = await mysqlPromises.createConnection({
+      host: "localhost",
+      user: "root",
+      database: "usersDB",
+      password: process.env.DBPASSWORD,
+    });
+    const promises = req.body.items.map(async (item) => {
+      const [rows, fields] = await promiseConnection.query(
+        "SELECT * FROM storeItems WHERE id = ?",
+        [item.id]
+      );
+      const data = rows.map((item) => {
+        const itemData = item.items;
+        return {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: itemData.name,
+            },
+            unit_amount: itemData.priceInCents,
+          },
+          quantity: itemData.quantity,
+        }
+
+
+      });
+      console.log(data);
+      return data
+    });
+    const [lineItems] = await Promise.all(promises)
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: lineItems,
+      success_url: `${process.env.SERVER_URL}/success`,
+      cancel_url: `${process.env.SERVER_URL}/cancel`,
+    });
+    res.json({ url: session.url });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 app.listen(3000);

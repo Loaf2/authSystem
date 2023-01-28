@@ -9,7 +9,7 @@ export default function Dashboard() {
   const { state } = useLocation();
   const [data, setData] = useState();
   const [credentials, setCredentials] = useState();
-  const [storeItems, setStoreItems] = useState();
+  const [storeItems, setStoreItems] = useState([]);
 
   useEffect(() => {
     const parsedData = JSON.parse(JSON.stringify(state[0]));
@@ -24,18 +24,34 @@ export default function Dashboard() {
         data.map((item) => {
           for (item of Object.values(item)) {
             console.log(item);
-            setStoreItems(...storeItems, item);
+            setStoreItems([...storeItems, item]);
           }
         });
       })
       .catch((err) => {
         console.log(err);
-      });
+      }); 
     console.log(storeItems);
   }, []);
 
-  function handleBuyREACT() {}
-
+  function handleBuyREACT() {
+    const items = [...storeItems]
+    console.log(items);
+      fetch("/create-checkout-session", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({items: items})
+      }).then(res => {
+        if (res.ok) return res.json()
+        return res.json().then(json => Promise.reject(json))
+      }).then(({ url }) => {
+        window.location = url
+      }).catch(e => {
+        console.error(e.error);
+      })
+  }
   function handleBuyHTML() {}
 
   return (
