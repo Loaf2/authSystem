@@ -11,6 +11,9 @@ export default defineConfig({
       '/dashboard': 'http://localhost:3000',
       '/items': 'http://localhost:3000',
       '/create-checkout-session': 'http://localhost:3000',
+      '/isUserAuth': 'http://localhost:3000',
+      '/retrieveStripeInfo': 'http://localhost:3000',
+      '/inputUserItems': 'http://localhost:3000',
     },
   },
 })

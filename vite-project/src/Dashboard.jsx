@@ -30,27 +30,30 @@ export default function Dashboard() {
       })
       .catch((err) => {
         console.log(err);
-      }); 
+      });
     console.log(storeItems);
   }, []);
 
   function handleBuyREACT() {
-    const items = [...storeItems]
+    const items = [...storeItems];
     console.log(items);
-      fetch("/create-checkout-session", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({items: items})
-      }).then(res => {
-        if (res.ok) return res.json()
-        return res.json().then(json => Promise.reject(json))
-      }).then(({ url }) => {
-        window.location = url
-      }).catch(e => {
-        console.error(e.error);
+    fetch("/create-checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ items: items }),
+    })
+      .then((res) => {
+        if (res.ok) return res.json();
+        return res.json().then((json) => Promise.reject(json));
       })
+      .then(({ url }) => {
+        window.location = url;
+      })
+      .catch((e) => {
+        console.error(e.error);
+      });
   }
   function handleBuyHTML() {}
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./App.css";
 
@@ -7,6 +7,7 @@ export default function Login() {
 
   const usernameRef = useRef("");
   const passwordRef = useRef("");
+  const [loginStatus, setLoginStatus] = useState(false);
 
   function handleLogin() {
     if (usernameRef.current.value === "" || passwordRef.current.value === "")
@@ -28,7 +29,9 @@ export default function Login() {
       .then((res) => res.json())
       .then((response) => {
         if (response[0] === "Success") {
+          setLoginStatus(true);
           console.log(response[2]);
+          localStorage.setItem("token", response[2].token);
           navigate("/dashboard", { state: [response[1], response[2]] });
         }
       })
@@ -36,6 +39,17 @@ export default function Login() {
         console.log(err);
       });
   }
+
+  const userAuthenticated = () => {
+    fetch("/isUserAuth", {
+      headers: {
+        "x-access-token": localStorage.getItem("token"),
+      },
+    }).then((res) => res.json())
+      .then((res) => console.log(res))
+      
+  
+  };
 
   return (
     <div className="App">
@@ -57,6 +71,9 @@ export default function Login() {
           Login
         </button>
       </div>
+      {loginStatus && (
+        <button onClick={userAuthenticated}>Check If authenticated</button>
+      )}
     </div>
   );
 }
